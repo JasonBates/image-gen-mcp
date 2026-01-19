@@ -87,6 +87,20 @@ Generate multiple fresh interpretations of the same prompt.
 | `count` | `4` | Number of images (2-4) |
 | `aspect_ratio` | `"1:1"` | See above |
 | `size` | `"2K"` | See above |
+| `diversity` | `0.0` | Prompt variation level (0.0-1.0). 0.0 = identical prompts, 0.3 = subtle changes, 0.6 = style/mood variations, 1.0 = creative reinterpretations |
+
+**Example with diversity:**
+```
+# Low diversity - subtle variations (lighting, minor details)
+generate_multiple("a robot waving", count=4, diversity=0.3)
+
+# High diversity - creative reinterpretations
+generate_multiple("a robot waving", count=4, diversity=0.9)
+→ "a vintage 1950s tin robot waving on a kitchen counter"
+→ "a massive robot waving goodbye to a departing spaceship"
+→ "a tiny robot waving from inside a snow globe"
+→ "a robot made of flowers waving in a garden"
+```
 
 ### generate_variations
 

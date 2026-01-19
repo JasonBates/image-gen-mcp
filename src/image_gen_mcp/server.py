@@ -202,6 +202,7 @@ async def generate_multiple(
     count: int = 4,
     aspect_ratio: str = "1:1",
     size: str = "2K",
+    diversity: float = 0.0,
 ) -> str:
     """Generate multiple images from the same prompt.
 
@@ -212,6 +213,11 @@ async def generate_multiple(
         count: Number of images to generate (2-4, default: 4)
         aspect_ratio: Image aspect ratio. Options: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 (default: 1:1)
         size: Image resolution. Options: 1K (fast), 2K (default), 4K (highest quality)
+        diversity: How different each image's prompt should be (0.0-1.0, default: 0.0).
+            0.0 = identical prompts (relies on model randomness).
+            0.3 = subtle variations (lighting, details).
+            0.6 = style/mood/setting changes.
+            1.0 = creative reinterpretations of the core subject.
 
     Returns:
         Information about all generated and saved images
@@ -232,14 +238,31 @@ async def generate_multiple(
     if size not in valid_sizes:
         return f"Error: Invalid size '{size}'. Valid options: {', '.join(valid_sizes)}"
 
+    # Clamp diversity to valid range
+    diversity = max(0.0, min(1.0, diversity))
+
     try:
         client = get_client()
-        images = await client.generate(
-            prompt=prompt,
-            aspect_ratio=aspect_ratio,
-            size=size,
-            num_images=count,
-        )
+
+        # Generate prompt variations if diversity requested
+        if diversity > 0:
+            try:
+                prompts = await client.generate_prompt_variations(prompt, count, diversity)
+            except Exception:
+                # Fallback to original prompt if LLM call fails
+                prompts = [prompt] * count
+        else:
+            prompts = [prompt] * count
+
+        # Generate images with (potentially different) prompts
+        images: list[bytes] = []
+        for img_prompt in prompts:
+            image = await client._single_generate(
+                prompt=img_prompt,
+                aspect_ratio=aspect_ratio,
+                size=size,
+            )
+            images.append(image)
 
         if not images:
             return "Error: No images were generated"

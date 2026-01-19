@@ -19,6 +19,7 @@ class ImageGenClient:
     """Client for generating images via laozhang.ai Gemini 3 Pro API."""
 
     ENDPOINT = "https://api.laozhang.ai/v1beta/models/gemini-3-pro-image-preview:generateContent"
+    CHAT_ENDPOINT = "https://api.laozhang.ai/v1/chat/completions"
     TIMEOUT = 120.0  # Image generation can take a while
 
     def __init__(self, api_key: str):
@@ -183,6 +184,95 @@ class ImageGenClient:
             images.append(image)
 
         return images
+
+    async def generate_prompt_variations(
+        self,
+        base_prompt: str,
+        count: int,
+        diversity: float = 0.5,
+    ) -> list[str]:
+        """Generate prompt variations using LLM.
+
+        Uses gpt-4o-mini to create variations of the base prompt with different
+        levels of creative divergence based on the diversity parameter.
+
+        Args:
+            base_prompt: Original image prompt to vary
+            count: Number of variations needed
+            diversity: 0.0-1.0, how different variations should be
+                - 0.0-0.3 (low): Subtle changes - lighting, time of day, minor details
+                - 0.4-0.6 (medium): Change style, mood, setting, or composition
+                - 0.7-1.0 (high): Creative reinterpretation, keep core subject
+
+        Returns:
+            List of modified prompts
+
+        Raises:
+            ImageGenError: If the LLM request fails
+        """
+        import json
+
+        client = await self._get_client()
+
+        system_prompt = f"""You generate variations of image prompts. Diversity level: {diversity:.1f}
+
+- 0.0-0.3 (low): Subtle changes - lighting, time of day, minor details
+- 0.4-0.6 (medium): Change style, mood, setting, or composition
+- 0.7-1.0 (high): Creative reinterpretation, keep core subject
+
+Generate exactly {count} variations. Return JSON only:
+{{"variations": ["prompt1", "prompt2", ...]}}"""
+
+        # Scale temperature with diversity: 0.7-1.0
+        temperature = 0.7 + (diversity * 0.3)
+
+        body = {
+            "model": "gpt-4o-mini",
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": base_prompt},
+            ],
+            "response_format": {"type": "json_object"},
+            "temperature": temperature,
+        }
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+
+        try:
+            response = await client.post(
+                self.CHAT_ENDPOINT,
+                json=body,
+                headers=headers,
+                timeout=30.0,  # Chat completions are fast
+            )
+        except httpx.TimeoutException:
+            raise ImageGenError("Prompt variation request timed out.")
+        except httpx.RequestError as e:
+            raise ImageGenError(f"Network error during prompt variation: {e}")
+
+        if response.status_code >= 400:
+            raise ImageGenError(
+                f"LLM API error: {response.text}",
+                status_code=response.status_code,
+            )
+
+        try:
+            data = response.json()
+            content = data["choices"][0]["message"]["content"]
+            parsed = json.loads(content)
+            variations = parsed.get("variations", [])
+
+            if len(variations) != count:
+                raise ImageGenError(
+                    f"Expected {count} variations, got {len(variations)}"
+                )
+
+            return variations
+        except (KeyError, json.JSONDecodeError) as e:
+            raise ImageGenError(f"Failed to parse LLM response: {e}")
 
     def _extract_images(self, response_data: dict[str, Any]) -> list[bytes]:
         """Extract image bytes from the API response.

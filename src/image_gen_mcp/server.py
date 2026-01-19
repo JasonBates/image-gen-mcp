@@ -144,14 +144,14 @@ def save_image(image_bytes: bytes, filename: str) -> GeneratedImage:
 async def generate_image(
     prompt: str,
     aspect_ratio: str = "1:1",
-    size: str = "4K",
+    size: str = "2K",
 ) -> str:
     """Generate a single image from a text prompt.
 
     Args:
         prompt: Text description of the desired image
         aspect_ratio: Image aspect ratio. Options: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 (default: 1:1)
-        size: Image resolution. Options: 1K (fast), 2K (balanced), 4K (highest quality, default)
+        size: Image resolution. Options: 1K (fast), 2K (default), 4K (highest quality)
 
     Returns:
         Information about the generated and saved image
@@ -201,7 +201,7 @@ async def generate_multiple(
     prompt: str,
     count: int = 4,
     aspect_ratio: str = "1:1",
-    size: str = "4K",
+    size: str = "2K",
     diversity: float = 0.0,
 ) -> str:
     """Generate multiple images from the same prompt.
@@ -212,7 +212,7 @@ async def generate_multiple(
         prompt: Text description of the desired image
         count: Number of images to generate (2-4, default: 4)
         aspect_ratio: Image aspect ratio. Options: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 (default: 1:1)
-        size: Image resolution. Options: 1K (fast), 2K (balanced), 4K (highest quality, default)
+        size: Image resolution. Options: 1K (fast), 2K (default), 4K (highest quality)
         diversity: How different each image's prompt should be (0.0-1.0, default: 0.0).
             0.0 = identical prompts (relies on model randomness).
             0.3 = subtle variations (lighting, details).
@@ -303,7 +303,7 @@ async def generate_variations(
     prompt: str,
     count: int = 4,
     aspect_ratio: str = "1:1",
-    size: str = "4K",
+    size: str = "2K",
 ) -> str:
     """Generate variations based on one or more reference images.
 
@@ -315,7 +315,7 @@ async def generate_variations(
         prompt: Text description guiding the variation (e.g., "in watercolor style", "make it more vibrant")
         count: Number of variations to generate (1-4, default: 4)
         aspect_ratio: Image aspect ratio. Options: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 (default: 1:1)
-        size: Image resolution. Options: 1K (fast), 2K (balanced), 4K (highest quality, default)
+        size: Image resolution. Options: 1K (fast), 2K (default), 4K (highest quality)
 
     Returns:
         Information about all generated and saved images

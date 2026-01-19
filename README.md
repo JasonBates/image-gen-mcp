@@ -75,7 +75,7 @@ Generate a single image from a text prompt.
 |-----------|---------|-------------|
 | `prompt` | (required) | Text description of the desired image |
 | `aspect_ratio` | `"1:1"` | 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 |
-| `size` | `"2K"` | 1K (fast), 2K (balanced), 4K (highest quality) |
+| `size` | `"4K"` | 1K (fast), 2K (balanced), 4K (highest quality, default) |
 
 ### generate_multiple
 
@@ -86,7 +86,7 @@ Generate multiple fresh interpretations of the same prompt.
 | `prompt` | (required) | Text description |
 | `count` | `4` | Number of images (2-4) |
 | `aspect_ratio` | `"1:1"` | See above |
-| `size` | `"2K"` | See above |
+| `size` | `"4K"` | See above |
 | `diversity` | `0.0` | Prompt variation level (0.0-1.0). 0.0 = identical prompts, 0.3 = subtle changes, 0.6 = style/mood variations, 1.0 = creative reinterpretations |
 
 **Example with diversity:**
@@ -112,7 +112,7 @@ Transform reference image(s) using a style/modification prompt.
 | `prompt` | (required) | How to transform (e.g., "in watercolor style") |
 | `count` | `4` | Number of variations (1-4) |
 | `aspect_ratio` | `"1:1"` | See above |
-| `size` | `"2K"` | See above |
+| `size` | `"4K"` | See above |
 
 **Example:** Take an existing robot image and generate pixel art and cyberpunk versions.
 

@@ -323,7 +323,7 @@ async def generate_multiple(
 async def generate_variations(
     image_paths: list[str],
     prompt: str,
-    count: int = 4,
+    count: int = 1,
     aspect_ratio: str = "1:1",
     size: str = "2K",
 ) -> str:
@@ -335,7 +335,7 @@ async def generate_variations(
     Args:
         image_paths: List of paths to reference images (1-14 images supported)
         prompt: Text description guiding the variation (e.g., "in watercolor style", "make it more vibrant")
-        count: Number of variations to generate (1-4, default: 4)
+        count: Number of variations to generate (1-4, default: 1)
         aspect_ratio: Image aspect ratio. Options: 1:1, 16:9, 9:16, 4:3, 3:4, 3:2, 2:3, 21:9, 9:21, 5:4 (default: 1:1)
         size: Image resolution. Options: 1K (fast), 2K (default), 4K (highest quality)
 

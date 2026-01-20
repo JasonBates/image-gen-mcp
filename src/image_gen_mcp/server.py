@@ -77,13 +77,35 @@ def generate_filename_from_prompt(prompt: str, suffix: str = "") -> str:
         Filename like "2026-01-19_cute_robot_waving.jpg"
     """
     # Words to skip when extracting key terms
+    # Includes: articles, prepositions, common verbs, style/form descriptors
     skip_words = {
+        # Articles, prepositions, conjunctions
         "a", "an", "the", "in", "on", "at", "to", "for", "of", "with",
-        "and", "or", "but", "is", "are", "was", "were", "be", "been",
-        "being", "have", "has", "had", "do", "does", "did", "will",
-        "would", "could", "should", "may", "might", "must", "shall",
-        "can", "very", "really", "just", "also", "that", "this",
+        "and", "or", "but", "by", "from", "into", "through", "about",
+        # Common verbs and auxiliaries
+        "is", "are", "was", "were", "be", "been", "being",
+        "have", "has", "had", "do", "does", "did", "will",
+        "would", "could", "should", "may", "might", "must", "shall", "can",
+        # Prompt action verbs (form, not content)
+        "create", "generate", "make", "design", "draw", "render", "show",
+        "showing", "depict", "depicting", "transform", "convert", "turn",
+        "imagine", "visualize", "illustrate", "illustrating", "produce",
+        "craft", "build", "compose", "featuring", "display", "displaying",
+        # Generic modifiers
+        "very", "really", "just", "also", "that", "this", "some", "like",
+        # Image type words (form, not content)
         "style", "image", "picture", "photo", "photograph", "illustration",
+        "graphic", "artwork", "art", "visual", "scene", "view", "shot",
+        "infographic", "diagram", "chart", "icon", "logo", "banner", "poster",
+        "rendering", "concept", "portrait", "landscape",
+        # Style descriptors (form, not content)
+        "minimalist", "minimal", "clean", "simple", "modern", "vintage",
+        "retro", "abstract", "realistic", "stylized", "artistic", "creative",
+        "professional", "elegant", "beautiful", "stunning", "aesthetic",
+        "detailed", "intricate", "complex", "bold", "subtle", "vibrant",
+        "muted", "dramatic", "cinematic", "photorealistic", "hyper",
+        "scientific", "technical", "digital", "hand", "drawn", "painted",
+        "flat", "3d", "2d", "isometric", "vector",
     }
 
     # Clean and tokenize the prompt
